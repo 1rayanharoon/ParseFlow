@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Parser - Modern Interface</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --success: #10b981;
+            --success-light: #6ee7b7;
+            --error: #ef4444;
+            --error-light: #fca5a5;
+            --warning: #f59e0b;
+            --bg-primary: #fafbfc;
+            --bg-secondary: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            gap: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .main-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            width: 100%;
+            max-width: 700px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        /* Upload Area */
+        .upload-section {
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-light);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-area:hover::before {
+            left: 100%;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-hint {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .browse-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .browse-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .browse-btn:active {
+            transform: translateY(0);
+        }
+
+        /* File Display */
+        .file-display {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: var(--radius-md);
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-name {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .file-size {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Status Section */
+        .status-section {
+            margin: 1.5rem 0;
+        }
+
+        .status-card {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .status-card.processing {
+            border-color: var(--primary-light);
+            background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+        }
+
+        .status-card.success {
+            border-color: var(--success-light);
+            background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 100%);
+        }
+
+        .status-card.error {
+            border-color: var(--error-light);
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .status-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .status-card.processing .status-icon {
+            background: var(--primary);
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .status-card.success .status-icon {
+            background: var(--success);
+            color: white;
+        }
+
+        .status-card.error .status-icon {
+            background: var(--error);
+            color: white;
+        }
+
+        .status-text {
+            flex: 1;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .status-message {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* JSON Section */
+        .json-section {
+            margin-top: 2rem;
+        }
+
+        .json-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .json-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .json-controls {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e1;
+            color: var(--text-primary);
+        }
+
+        .json-container {
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .json-display, .json-editor {
+            background: #fafbfc;
+            color: var(--text-primary);
+            padding: 1.5rem;
+            font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            max-height: 400px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+            border: none;
+            outline: none;
+            width: 100%;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        .json-editor {
+            background: white;
+            border: 2px solid var(--primary);
+            min-height: 300px;
+        }
+
+        .validation-message {
+            margin-top: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .validation-message.success {
+            background: linear-gradient(135deg, #f0fdf9 0%, #ecfdf5 100%);
+            border: 1px solid var(--success-light);
+            color: #166534;
+        }
+
+        .validation-message.error {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 1px solid var(--error-light);
+            color: #dc2626;
+        }
+
+        .download-section {
+            margin-top: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .app {
+                padding: 1rem 0.5rem;
+                gap: 1.5rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .card-content {
+                padding: 1.5rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .json-controls {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .download-section {
+                flex-direction: column;
+            }
+
+            .download-section .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 500px; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="header">
+            <h1>PDF Parser</h1>
+            <p>Transform your PDF documents into structured JSON data with our intelligent parsing engine</p>
+        </div>
+        
+        <div class="main-card">
+            <div class="card-content">
+                <div class="upload-section">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">Drop your PDF file here</div>
+                        <div class="upload-hint">or click to browse from your device</div>
+                        <button class="browse-btn" type="button">Choose File</button>
+                    </div>
+                    <input type="file" id="fileInput" class="file-input" accept=".pdf">
+                </div>
+
+                <div id="fileDisplay" class="file-display hidden">
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name" id="fileName"></div>
+                        <div class="file-size" id="fileSize"></div>
+                    </div>
+                </div>
+
+                <div id="statusSection" class="status-section hidden">
+                    <div id="statusCard" class="status-card">
+                        <div class="status-content">
+                            <div class="status-icon" id="statusIcon">⏳</div>
+                            <div class="status-text">
+                                <div class="status-title" id="statusTitle">Processing</div>
+                                <div class="status-message" id="statusMessage">Uploading your file...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="jsonSection" class="json-section hidden">
+                    <div class="json-header">
+                        <div class="json-title">
+                            <span>📊</span>
+                            Parsed Data
+                        </div>
+                        <div class="json-controls">
+                            <button id="editJsonBtn" class="btn btn-secondary">
+                                <span>✏️</span>Edit
+                            </button>
+                            <button id="saveJsonBtn" class="btn btn-success hidden">
+                                <span>💾</span>Save
+                            </button>
+                            <button id="cancelEditBtn" class="btn btn-secondary hidden">
+                                <span>❌</span>Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="json-container">
+                        <div id="jsonDisplay" class="json-display"></div>
+                        <textarea id="jsonEditor" class="json-editor hidden" placeholder="Edit your JSON data here..."></textarea>
+                    </div>
+                    
+                    <div id="validationMessage" class="validation-message hidden"></div>
+                    
+                    <div class="download-section">
+                        <button id="downloadJsonBtn" class="btn btn-primary">
+                            <span>📥</span>Download JSON
+                        </button>
+                        <button id="downloadTextBtn" class="btn btn-primary">
+                            <span>📝</span>Download Text
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentJsonData = null;
+        let currentFilename = '';
+        let isEditing = false;
+
+        // DOM elements
+        const uploadArea = document.querySelector('.upload-area');
+        const fileInput = document.getElementById('fileInput');
+        const fileDisplay = document.getElementById('fileDisplay');
+        const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
+        const statusSection = document.getElementById('statusSection');
+        const statusCard = document.getElementById('statusCard');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusTitle = document.getElementById('statusTitle');
+        const statusMessage = document.getElementById('statusMessage');
+        const jsonSection = document.getElementById('jsonSection');
+        const jsonDisplay = document.getElementById('jsonDisplay');
+        const jsonEditor = document.getElementById('jsonEditor');
+        const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+        const downloadTextBtn = document.getElementById('downloadTextBtn');
+        const editJsonBtn = document.getElementById('editJsonBtn');
+        const saveJsonBtn = document.getElementById('saveJsonBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const validationMessage = document.getElementById('validationMessage');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Handle file upload
+        function handleFile(file) {
+            if (!file.type.includes('pdf')) {
+                showNotification('Please select a PDF file.', 'error');
+                return;
+            }
+
+            if (file.size > 16 * 1024 * 1024) {
+                showNotification('File size must be less than 16MB.', 'error');
+                return;
+            }
+
+            currentFilename = file.name;
+            showFileDisplay(file);
+            uploadFile(file);
+        }
+
+        function showFileDisplay(file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
+            fileDisplay.classList.remove('hidden');
+            fileDisplay.classList.add('fade-in');
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function showStatus(title, message, type = 'processing', icon = '⏳') {
+            statusSection.classList.remove('hidden');
+            statusSection.classList.add('fade-in');
+            
+            statusCard.className = `status-card ${type}`;
+            statusIcon.textContent = icon;
+            statusTitle.textContent = title;
+            statusMessage.textContent = message;
+        }
+
+        function hideStatus() {
+            statusSection.classList.add('hidden');
+        }
+
+        function showJsonData(data) {
+            currentJsonData = data;
+            jsonDisplay.textContent = JSON.stringify(data, null, 2);
+            jsonSection.classList.remove('hidden');
+            jsonSection.classList.add('slide-down');
+            exitEditMode();
+        }
+
+        function hideJsonData() {
+            jsonSection.classList.add('hidden');
+            currentJsonData = null;
+            exitEditMode();
+        }
+
+        // JSON editing functionality
+        function enterEditMode() {
+            isEditing = true;
+            jsonEditor.value = JSON.stringify(currentJsonData, null, 2);
+            
+            jsonDisplay.classList.add('hidden');
+            jsonEditor.classList.remove('hidden');
+            
+            editJsonBtn.classList.add('hidden');
+            saveJsonBtn.classList.remove('hidden');
+            cancelEditBtn.classList.remove('hidden');
+            
+            hideValidationMessage();
+            jsonEditor.focus();
+        }
+
+        function exitEditMode() {
+            isEditing = false;
+            
+            jsonEditor.classList.add('hidden');
+            jsonDisplay.classList.remove('hidden');
+            
+            saveJsonBtn.classList.add('hidden');
+            cancelEditBtn.classList.add('hidden');
+            editJsonBtn.classList.remove('hidden');
+            
+            hideValidationMessage();
+        }
+
+        function saveJsonChanges() {
+            try {
+                const editedText = jsonEditor.value;
+                const parsedData = JSON.parse(editedText);
+                
+                currentJsonData = parsedData;
+                jsonDisplay.textContent = JSON.stringify(parsedData, null, 2);
+                
+                showValidationMessage('✅ JSON updated successfully!', 'success');
+                exitEditMode();
+                
+            } catch (error) {
+                showValidationMessage(`❌ Invalid JSON: ${error.message}`, 'error');
+            }
+        }
+
+        function showValidationMessage(message, type = 'error') {
+            validationMessage.innerHTML = message;
+            validationMessage.className = `validation-message ${type}`;
+            validationMessage.classList.remove('hidden');
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    hideValidationMessage();
+                }, 3000);
+            }
+        }
+
+        function hideValidationMessage() {
+            validationMessage.classList.add('hidden');
+        }
+
+        function showNotification(message, type = 'error') {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 2rem;
+                right: 2rem;
+                background: ${type === 'error' ? 'var(--error)' : 'var(--success)'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: var(--radius-md);
+                font-weight: 500;
+                z-index: 1000;
+                animation: fadeIn 0.3s ease;
+                box-shadow: var(--shadow-lg);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 4000);
+        }
+
+        // Event listeners
+        editJsonBtn.addEventListener('click', enterEditMode);
+        saveJsonBtn.addEventListener('click', saveJsonChanges);
+        cancelEditBtn.addEventListener('click', exitEditMode);
+
+        // Keyboard shortcuts
+        jsonEditor.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveJsonChanges();
+            }
+            
+            if (e.key === 'Escape') {
+                exitEditMode();
+            }
+        });
+
+        async function uploadFile(file) {
+            hideJsonData();
+            showStatus('Processing', 'Uploading and parsing your file...', 'processing', '⏳');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showStatus('Complete', 'File processed successfully!', 'success', '✅');
+                    showJsonData(result.parsed_data);
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showStatus('Error', error.message, 'error', '❌');
+            }
+        }
+
+        // Download functionality
+        downloadJsonBtn.addEventListener('click', () => {
+            if (currentJsonData) {
+                downloadJson(currentJsonData, `${currentFilename.replace('.pdf', '')}_parsed.json`);
+            }
+        });
+
+        downloadTextBtn.addEventListener('click', () => {
+            if (currentJsonData) {
+                const textContent = extractTextFromJson(currentJsonData);
+                downloadText(textContent, `${currentFilename.replace('.pdf', '')}_text.txt`);
+            }
+        });
+
+        function downloadJson(data, filename) {
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadText(text, filename) {
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function extractTextFromJson(data) {
+            let textContent = '';
+            const elements = data?.data?.elements || data?.elements || [];
+            
+            elements.forEach(element => {
+                if (element.text && element.text.trim()) {
+                    textContent += element.text + '\n';
+                }
+            });
+            
+            return textContent;
+        }
+    </script>
+</body>
+</html>
