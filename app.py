@@ -22,7 +22,10 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ChatDoc API Configuration
-API_KEY = "API_KEY_HERE"  # Replace with your actual API key
+API_KEY = os.getenv("chatdoc_api_key", "your_api_key_here")
+if not API_KEY:
+    raise ValueError("API key for ChatDoc is not set. Please set the 'chatdoc_api_key' environment variable.")
+
 UPLOAD_URL = "https://api.chatdoc.com/api/v2/documents/upload"
 DOCUMENT_URL = "https://api.chatdoc.com/api/v2/documents/{document_id}"
 PDF_PARSER_URL = "https://api.chatdoc.com/api/v2/pdf_parser/{document_id}"
