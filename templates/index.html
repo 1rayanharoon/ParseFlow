@@ -892,8 +892,14 @@
                         <button id="downloadJsonBtn" class="btn btn-primary">
                             <span>📥</span>Download JSON
                         </button>
+                        <button id="copyJsonBtn" class="btn btn-secondary">
+                            <span>📋</span>Copy JSON
+                        </button>
                         <button id="downloadTextBtn" class="btn btn-primary">
                             <span>📝</span>Download Text
+                        </button>
+                        <button id="copyTextBtn" class="btn btn-secondary">
+                            <span>📄</span>Copy Text
                         </button>
                     </div>
                 </div>
@@ -929,7 +935,9 @@
         const jsonDisplay = document.getElementById('jsonDisplay');
         const jsonEditor = document.getElementById('jsonEditor');
         const downloadJsonBtn = document.getElementById('downloadJsonBtn');
+        const copyJsonBtn = document.getElementById('copyJsonBtn');
         const downloadTextBtn = document.getElementById('downloadTextBtn');
+        const copyTextBtn = document.getElementById('copyTextBtn');
         const editJsonBtn = document.getElementById('editJsonBtn');
         const saveJsonBtn = document.getElementById('saveJsonBtn');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -944,8 +952,19 @@
         const searchCount = document.getElementById('searchCount');
 
         // Utility function to escape regex special characters
+
         function escapeRegExp(string) {
-            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\        const jsonDisplay = document.getElementByI');
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        // Show notification
+        function showNotification(message, type = 'info') { 
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
 
         // Drag and drop functionality
@@ -1281,31 +1300,44 @@
                 jsonEditor.focus();
                 jsonEditor.setSelectionRange(match.start, match.end);
                 
-                // Scroll to the match with better positioning
+                // Scroll to the match with improved positioning
                 scrollToMatch(match);
             }
         }
 
+        // FIXED: Improved scrollToMatch function
         function scrollToMatch(match) {
-            // Get textarea dimensions and styling
-            const textareaRect = jsonEditor.getBoundingClientRect();
-            const textareaStyle = getComputedStyle(jsonEditor);
-            const lineHeight = parseInt(textareaStyle.lineHeight) || 20;
-            const fontSize = parseInt(textareaStyle.fontSize) || 14;
-            
-            // Calculate line number of the match
+            // Get the text before the match to calculate line position
             const textBeforeMatch = jsonEditor.value.substring(0, match.start);
-            const lineNumber = textBeforeMatch.split('\n').length - 1;
+            const lines = textBeforeMatch.split('\n');
+            const lineNumber = lines.length - 1;
             
-            // Calculate visible lines in textarea
-            const visibleLines = Math.floor(jsonEditor.clientHeight / lineHeight);
+            // Get computed styles for proper calculations
+            const computedStyle = window.getComputedStyle(jsonEditor);
+            const lineHeight = parseFloat(computedStyle.lineHeight);
+            const paddingTop = parseFloat(computedStyle.paddingTop);
             
-            // Position the match in the middle of visible area
-            const targetLine = Math.max(0, lineNumber - Math.floor(visibleLines / 3));
-            const scrollTop = targetLine * lineHeight;
+            // Calculate the pixel position of the line
+            const linePixelPosition = lineNumber * lineHeight;
+            
+            // Calculate desired scroll position (center the match in viewport)
+            const viewportHeight = jsonEditor.clientHeight;
+            const scrollPosition = linePixelPosition - (viewportHeight / 2) + paddingTop;
+            
+            // Ensure scroll position is within valid bounds
+            const maxScroll = jsonEditor.scrollHeight - jsonEditor.clientHeight;
+            const finalScrollPosition = Math.max(0, Math.min(maxScroll, scrollPosition));
             
             // Smooth scroll to position
-            jsonEditor.scrollTop = scrollTop;
+            jsonEditor.scrollTo({
+                top: finalScrollPosition,
+                behavior: 'smooth'
+            });
+            
+            // Alternative fallback for browsers that don't support smooth scrolling
+            if (jsonEditor.scrollTop === finalScrollPosition) {
+                jsonEditor.scrollTop = finalScrollPosition;
+            }
         }
 
         function findNext() {
@@ -1409,7 +1441,6 @@
                 } else {
                     findNext();
                 }
-                highlightMatch(); // Only highlight/select in editor on navigation
             }
         });
 
@@ -1453,7 +1484,6 @@
                     } else {
                         findNext();
                     }
-                    highlightMatch();
                 }
                 
                 if ((e.ctrlKey || e.metaKey) && e.key === 's') {
@@ -1473,10 +1503,16 @@
             }
         });
 
-        // Download functionality
+        // Download and Copy functionality
         downloadJsonBtn.addEventListener('click', () => {
             if (currentJsonData) {
                 downloadJson(currentJsonData, `${currentFilename.replace('.pdf', '')}_parsed.json`);
+            }
+        });
+
+        copyJsonBtn.addEventListener('click', () => {
+            if (currentJsonData) {
+                copyToClipboard(JSON.stringify(currentJsonData, null, 2), 'JSON data copied to clipboard!');
             }
         });
 
@@ -1484,6 +1520,13 @@
             if (currentJsonData) {
                 const textContent = extractTextFromJson(currentJsonData);
                 downloadText(textContent, `${currentFilename.replace('.pdf', '')}_text.txt`);
+            }
+        });
+
+        copyTextBtn.addEventListener('click', () => {
+            if (currentJsonData) {
+                const textContent = extractTextFromJson(currentJsonData);
+                copyToClipboard(textContent, 'Text content copied to clipboard!');
             }
         });
 
@@ -1511,6 +1554,31 @@
             URL.revokeObjectURL(url);
         }
 
+        async function copyToClipboard(text, successMessage = 'Copied to clipboard!') {
+            try {
+                await navigator.clipboard.writeText(text);
+                showNotification(successMessage, 'success');
+            } catch (err) {
+                // Fallback for browsers that don't support clipboard API
+                try {
+                    const textArea = document.createElement('textarea');
+                    textArea.value = text;
+                    textArea.style.position = 'fixed';
+                    textArea.style.left = '-999999px';
+                    textArea.style.top = '-999999px';
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    showNotification(successMessage, 'success');
+                } catch (fallbackErr) {
+                    console.error('Failed to copy text: ', fallbackErr);
+                    showNotification('Failed to copy to clipboard', 'error');
+                }
+            }
+        }
+
         function extractTextFromJson(data) {
             let textContent = '';
             const elements = data?.data?.elements || data?.elements || [];
@@ -1524,7 +1592,44 @@
             return textContent || 'No text content found in the parsed data.';
         }
 
+        // --- MOCK MODE FLAG ---
+        const USE_MOCK = true; // Set to false for production
+        // --- END MOCK MODE FLAG ---
+
         async function uploadFile(file) {
+            if (USE_MOCK) {
+                hideProcessSection();
+                hideJsonData();
+                showStatus('Processing', `Simulating PDF parsing with ${selectedProcessingType}...`, 'processing', '⚡');
+                setTimeout(() => {
+                    // Large mock data: 100 elements
+                    const mockElements = [];
+                    for (let i = 1; i <= 100; i++) {
+                        mockElements.push({
+                            text: `Mock line ${i}: This is a sample line of text for testing large JSON mock data.`,
+                            type: i % 3 === 0 ? 'table' : (i % 2 === 0 ? 'paragraph' : 'title'),
+                            id: i,
+                            page: Math.floor((i-1)/10)+1
+                        });
+                    }
+                    const mockData = selectedProcessingType === 'advanced'
+                        ? {
+                            data: {
+                                elements: mockElements,
+                                metadata: { author: 'Mock Author', pages: 10, created: '2025-08-06', title: 'Large Mock PDF' }
+                            }
+                        }
+                        : {
+                            data: {
+                                elements: mockElements.slice(0, 100)
+                            }
+                        };
+                    showStatus('Complete', 'File processed (mock) successfully!', 'success', '✅');
+                    showJsonData(mockData);
+                    showNotification('PDF processed (mock) successfully!', 'success');
+                }, 1000);
+                return;
+            }
             hideProcessSection();
             hideJsonData();
             showStatus('Processing', `Analyzing your PDF with ${selectedProcessingType} parsing...`, 'processing', '⚡');
