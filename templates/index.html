@@ -210,6 +210,179 @@
             transition: all 0.3s ease;
         }
 
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: auto;
+        }
+
+        .btn-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-remove {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .btn-remove:hover {
+            background: #fecaca;
+            transform: scale(1.05);
+        }
+
+        /* Process Section */
+        .process-section {
+            margin: 1.5rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .process-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-card {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .option-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .option-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+        }
+
+        .option-card.selected::before {
+            content: '✓';
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            width: 24px;
+            height: 24px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .option-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .option-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .option-content {
+            flex: 1;
+        }
+
+        .option-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .option-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+
+        .option-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-tag {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .option-card.selected .feature-tag {
+            background: #ddd6fe;
+            color: #5b21b6;
+        }
+
+        .option-time {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .process-actions {
+            text-align: center;
+        }
+
+        .btn-large {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .process-info {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
         .file-icon {
             width: 40px;
             height: 40px;
@@ -403,6 +576,52 @@
             background: var(--bg-secondary);
         }
 
+        .json-search-controls {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            align-items: center;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+            min-width: 100px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .search-replace-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .search-count {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            padding: 0 0.5rem;
+            white-space: nowrap;
+        }
+
         .json-display, .json-editor {
             background: #fafbfc;
             color: var(--text-primary);
@@ -481,6 +700,10 @@
                 padding: 2rem 1rem;
             }
 
+            .process-options {
+                grid-template-columns: 1fr;
+            }
+
             .json-controls {
                 width: 100%;
                 justify-content: stretch;
@@ -498,6 +721,15 @@
             .download-section .btn {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .json-search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input-group {
+                min-width: auto;
             }
         }
 
@@ -518,6 +750,17 @@
 
         .slide-down {
             animation: slideDown 0.3s ease-out;
+        }
+
+        /* Search highlight styles */
+        .search-highlight {
+            background-color: #fef08a !important;
+            color: #365314 !important;
+        }
+
+        .search-highlight.current {
+            background-color: #f59e0b !important;
+            color: white !important;
         }
     </style>
 </head>
@@ -545,6 +788,52 @@
                     <div class="file-info">
                         <div class="file-name" id="fileName"></div>
                         <div class="file-size" id="fileSize"></div>
+                    </div>
+                    <div class="file-actions">
+                        <button id="removeFileBtn" class="btn-icon btn-remove" title="Remove file">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="processSection" class="process-section hidden">
+                    <div class="process-options">
+                        <div class="option-card" data-type="basic">
+                            <div class="option-icon">📝</div>
+                            <div class="option-content">
+                                <div class="option-title">Basic Text Extraction</div>
+                                <div class="option-description">Clean text content, paragraphs, and basic formatting</div>
+                                <div class="option-features">
+                                    <span class="feature-tag">✓ Text content</span>
+                                    <span class="feature-tag">✓ Paragraphs</span>
+                                    <span class="feature-tag">✓ Basic structure</span>
+                                </div>
+                                <div class="option-time">⚡ ~10-15 seconds</div>
+                            </div>
+                        </div>
+                        <div class="option-card" data-type="advanced">
+                            <div class="option-icon">🧠</div>
+                            <div class="option-content">
+                                <div class="option-title">Advanced Analysis</div>
+                                <div class="option-description">Complete document analysis with tables, metadata, and layout</div>
+                                <div class="option-features">
+                                    <span class="feature-tag">✓ Everything in Basic</span>
+                                    <span class="feature-tag">✓ Tables & Charts</span>
+                                    <span class="feature-tag">✓ Document metadata</span>
+                                    <span class="feature-tag">✓ Layout analysis</span>
+                                </div>
+                                <div class="option-time">⏱️ ~20-45 seconds</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="process-actions">
+                        <button id="processBtn" class="btn btn-primary btn-large">
+                            <span>⚡</span>
+                            Process PDF
+                        </button>
+                        <div class="process-info">
+                            <span>⏱️ Estimated time: 10-30 seconds</span>
+                        </div>
                     </div>
                 </div>
 
@@ -580,6 +869,19 @@
                     </div>
 
                     <div class="json-container">
+                        <div class="json-search-controls hidden" id="jsonSearchControls">
+                            <div class="search-input-group">
+                                <input type="text" id="searchInput" class="search-input" placeholder="Search...">
+                                <input type="text" id="replaceInput" class="search-input" placeholder="Replace with...">
+                            </div>
+                            <div class="search-replace-buttons">
+                                <button class="btn btn-secondary" id="prevMatchBtn" title="Previous (Ctrl+Shift+G)">↑</button>
+                                <button class="btn btn-secondary" id="nextMatchBtn" title="Next (Ctrl+G)">↓</button>
+                                <button class="btn btn-primary" id="replaceBtn">Replace</button>
+                                <button class="btn btn-primary" id="replaceAllBtn">Replace All</button>
+                            </div>
+                            <div class="search-count" id="searchCount"></div>
+                        </div>
                         <div id="jsonDisplay" class="json-display"></div>
                         <textarea id="jsonEditor" class="json-editor hidden" placeholder="Edit your JSON data here..."></textarea>
                     </div>
@@ -602,7 +904,12 @@
     <script>
         let currentJsonData = null;
         let currentFilename = '';
+        let currentFile = null;
         let isEditing = false;
+        let selectedProcessingType = 'basic';
+        let currentSearchMatches = [];
+        let currentMatchIndex = -1;
+        let originalJsonValue = '';
 
         // DOM elements
         const uploadArea = document.querySelector('.upload-area');
@@ -610,6 +917,9 @@
         const fileDisplay = document.getElementById('fileDisplay');
         const fileName = document.getElementById('fileName');
         const fileSize = document.getElementById('fileSize');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+        const processSection = document.getElementById('processSection');
+        const processBtn = document.getElementById('processBtn');
         const statusSection = document.getElementById('statusSection');
         const statusCard = document.getElementById('statusCard');
         const statusIcon = document.getElementById('statusIcon');
@@ -624,6 +934,19 @@
         const saveJsonBtn = document.getElementById('saveJsonBtn');
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         const validationMessage = document.getElementById('validationMessage');
+        const searchInput = document.getElementById('searchInput');
+        const replaceInput = document.getElementById('replaceInput');
+        const prevMatchBtn = document.getElementById('prevMatchBtn');
+        const nextMatchBtn = document.getElementById('nextMatchBtn');
+        const replaceBtn = document.getElementById('replaceBtn');
+        const replaceAllBtn = document.getElementById('replaceAllBtn');
+        const jsonSearchControls = document.getElementById('jsonSearchControls');
+        const searchCount = document.getElementById('searchCount');
+
+        // Utility function to escape regex special characters
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\        const jsonDisplay = document.getElementByI');
+        }
 
         // Drag and drop functionality
         uploadArea.addEventListener('dragover', (e) => {
@@ -660,14 +983,17 @@
                 return;
             }
 
-            if (file.size > 16 * 1024 * 1024) {
-                showNotification('File size must be less than 16MB.', 'error');
+            if (file.size > 50 * 1024 * 1024) {
+                showNotification('File size must be less than 50MB.', 'error');
                 return;
             }
 
             currentFilename = file.name;
+            currentFile = file;
             showFileDisplay(file);
-            uploadFile(file);
+            showProcessSection();
+            hideJsonData();
+            hideStatus();
         }
 
         function showFileDisplay(file) {
@@ -675,6 +1001,62 @@
             fileSize.textContent = formatFileSize(file.size);
             fileDisplay.classList.remove('hidden');
             fileDisplay.classList.add('fade-in');
+        }
+
+        function showProcessSection() {
+            processSection.classList.remove('hidden');
+            processSection.classList.add('fade-in');
+            
+            // Setup option cards click handlers
+            setupProcessingOptions();
+        }
+
+        function hideProcessSection() {
+            processSection.classList.add('hidden');
+        }
+
+        function setupProcessingOptions() {
+            const optionCards = document.querySelectorAll('.option-card');
+            
+            // Set first option as selected by default
+            if (optionCards.length > 0) {
+                optionCards[0].classList.add('selected');
+                selectedProcessingType = optionCards[0].dataset.type || 'basic';
+            }
+            
+            optionCards.forEach((card) => {
+                card.addEventListener('click', () => {
+                    // Remove selection from all cards
+                    optionCards.forEach(c => c.classList.remove('selected'));
+                    // Add selection to clicked card
+                    card.classList.add('selected');
+                    
+                    selectedProcessingType = card.dataset.type || 'basic';
+                    
+                    // Update button text based on selection
+                    updateProcessButtonText();
+                });
+            });
+            
+            // Set initial button text
+            updateProcessButtonText();
+        }
+
+        function updateProcessButtonText() {
+            const isAdvanced = selectedProcessingType === 'advanced';
+            processBtn.innerHTML = isAdvanced 
+                ? '<span>🧠</span>Start Advanced Analysis'
+                : '<span>📝</span>Extract Text & Structure';
+        }
+
+        function removeFile() {
+            currentFile = null;
+            currentFilename = '';
+            fileDisplay.classList.add('hidden');
+            hideProcessSection();
+            hideJsonData();
+            hideStatus();
+            fileInput.value = '';
         }
 
         function formatFileSize(bytes) {
@@ -716,30 +1098,30 @@
         // JSON editing functionality
         function enterEditMode() {
             isEditing = true;
-            jsonEditor.value = JSON.stringify(currentJsonData, null, 2);
-            
+            originalJsonValue = JSON.stringify(currentJsonData, null, 2);
+            jsonEditor.value = originalJsonValue;
             jsonDisplay.classList.add('hidden');
             jsonEditor.classList.remove('hidden');
-            
             editJsonBtn.classList.add('hidden');
             saveJsonBtn.classList.remove('hidden');
             cancelEditBtn.classList.remove('hidden');
-            
+            showSearchControls();
             hideValidationMessage();
             jsonEditor.focus();
+            performSearch();
+            updateSearchButtons();
         }
 
         function exitEditMode() {
             isEditing = false;
-            
             jsonEditor.classList.add('hidden');
             jsonDisplay.classList.remove('hidden');
-            
             saveJsonBtn.classList.add('hidden');
             cancelEditBtn.classList.add('hidden');
             editJsonBtn.classList.remove('hidden');
-            
+            hideSearchControls();
             hideValidationMessage();
+            clearSearch();
         }
 
         function saveJsonChanges() {
@@ -756,6 +1138,11 @@
             } catch (error) {
                 showValidationMessage(`❌ Invalid JSON: ${error.message}`, 'error');
             }
+        }
+
+        function cancelEdit() {
+            jsonEditor.value = originalJsonValue;
+            exitEditMode();
         }
 
         function showValidationMessage(message, type = 'error') {
@@ -775,7 +1162,6 @@
         }
 
         function showNotification(message, type = 'error') {
-            // Simple notification system
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
@@ -798,49 +1184,294 @@
             }, 4000);
         }
 
-        // Event listeners
-        editJsonBtn.addEventListener('click', enterEditMode);
-        saveJsonBtn.addEventListener('click', saveJsonChanges);
-        cancelEditBtn.addEventListener('click', exitEditMode);
+        // Search and Replace Functionality
+        function showSearchControls() {
+            jsonSearchControls.classList.remove('hidden');
+        }
 
-        // Keyboard shortcuts
-        jsonEditor.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                saveJsonChanges();
+        function hideSearchControls() {
+            jsonSearchControls.classList.add('hidden');
+            clearSearch();
+        }
+
+        function clearSearch() {
+            searchInput.value = '';
+            replaceInput.value = '';
+            currentSearchMatches = [];
+            currentMatchIndex = -1;
+            updateSearchCount();
+            removeHighlights();
+        }
+
+        function updateSearchCount() {
+            if (currentSearchMatches.length > 0) {
+                searchCount.textContent = `${currentMatchIndex + 1} of ${currentSearchMatches.length}`;
+            } else if (searchInput.value.trim()) {
+                searchCount.textContent = 'No matches';
+            } else {
+                searchCount.textContent = '';
             }
+        }
+
+        function removeHighlights() {
+            // Clear any existing selection in the editor
+            if (jsonEditor.selectionStart !== jsonEditor.selectionEnd) {
+                jsonEditor.setSelectionRange(jsonEditor.selectionStart, jsonEditor.selectionStart);
+            }
+        }
+
+        // Modified performSearch to accept shouldHighlight param
+        function performSearch(shouldHighlight = false) {
+            const searchTerm = searchInput.value.trim();
+            const text = jsonEditor.value;
+            currentSearchMatches = [];
+            // Store current cursor position to find nearest match
+            const currentPos = jsonEditor.selectionStart;
+            if (searchTerm) {
+                let match;
+                const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
+                while ((match = regex.exec(text)) !== null) {
+                    currentSearchMatches.push({
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        text: match[0]
+                    });
+                    // Prevent infinite loop on zero-length matches
+                    if (match.index === regex.lastIndex) {
+                        regex.lastIndex++;
+                    }
+                }
+            }
+            if (currentSearchMatches.length > 0) {
+                let foundIndex = currentSearchMatches.findIndex(match => match.start >= currentPos);
+                if (foundIndex === -1) {
+                    foundIndex = 0;
+                }
+                currentMatchIndex = foundIndex;
+            } else {
+                currentMatchIndex = -1;
+            }
+            updateSearchCount();
+            updateSearchButtons();
+            // Only highlight/select in editor if requested (e.g., on navigation)
+            if (shouldHighlight && currentSearchMatches.length > 0) {
+                highlightMatch();
+            }
+        }
+
+        function updateSearchButtons() {
+            const disabled = currentSearchMatches.length === 0;
+            prevMatchBtn.disabled = disabled;
+            nextMatchBtn.disabled = disabled;
+            replaceBtn.disabled = disabled;
+            replaceAllBtn.disabled = disabled;
+
+            // Update button opacity based on disabled state
+            prevMatchBtn.style.opacity = disabled ? '0.5' : '1';
+            nextMatchBtn.style.opacity = disabled ? '0.5' : '1';
+            replaceBtn.style.opacity = disabled ? '0.5' : '1';
+            replaceAllBtn.style.opacity = disabled ? '0.5' : '1';
+        }
+
+        function highlightMatch() {
+            if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.length) {
+                const match = currentSearchMatches[currentMatchIndex];
+                
+                // Focus and select the match
+                jsonEditor.focus();
+                jsonEditor.setSelectionRange(match.start, match.end);
+                
+                // Scroll to the match with better positioning
+                scrollToMatch(match);
+            }
+        }
+
+        function scrollToMatch(match) {
+            // Get textarea dimensions and styling
+            const textareaRect = jsonEditor.getBoundingClientRect();
+            const textareaStyle = getComputedStyle(jsonEditor);
+            const lineHeight = parseInt(textareaStyle.lineHeight) || 20;
+            const fontSize = parseInt(textareaStyle.fontSize) || 14;
             
-            if (e.key === 'Escape') {
-                exitEditMode();
+            // Calculate line number of the match
+            const textBeforeMatch = jsonEditor.value.substring(0, match.start);
+            const lineNumber = textBeforeMatch.split('\n').length - 1;
+            
+            // Calculate visible lines in textarea
+            const visibleLines = Math.floor(jsonEditor.clientHeight / lineHeight);
+            
+            // Position the match in the middle of visible area
+            const targetLine = Math.max(0, lineNumber - Math.floor(visibleLines / 3));
+            const scrollTop = targetLine * lineHeight;
+            
+            // Smooth scroll to position
+            jsonEditor.scrollTop = scrollTop;
+        }
+
+        function findNext() {
+            if (currentSearchMatches.length > 0) {
+                currentMatchIndex = (currentMatchIndex + 1) % currentSearchMatches.length;
+                updateSearchCount();
+                highlightMatch();
+            }
+        }
+
+        function findPrev() {
+            if (currentSearchMatches.length > 0) {
+                currentMatchIndex = (currentMatchIndex - 1 + currentSearchMatches.length) % currentSearchMatches.length;
+                updateSearchCount();
+                highlightMatch();
+            }
+        }
+
+        function replaceCurrentMatch() {
+            if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.length) {
+                const match = currentSearchMatches[currentMatchIndex];
+                const replacementText = replaceInput.value;
+                const text = jsonEditor.value;
+                
+                // Replace the text
+                const newText = text.substring(0, match.start) + replacementText + text.substring(match.end);
+                jsonEditor.value = newText;
+                
+                // Calculate the difference in length
+                const lengthDiff = replacementText.length - (match.end - match.start);
+                
+                // Update all subsequent match positions
+                for (let i = currentMatchIndex + 1; i < currentSearchMatches.length; i++) {
+                    currentSearchMatches[i].start += lengthDiff;
+                    currentSearchMatches[i].end += lengthDiff;
+                }
+                
+                // Remove the replaced match
+                currentSearchMatches.splice(currentMatchIndex, 1);
+                
+                // Adjust current index
+                if (currentMatchIndex >= currentSearchMatches.length && currentSearchMatches.length > 0) {
+                    currentMatchIndex = currentSearchMatches.length - 1;
+                } else if (currentSearchMatches.length === 0) {
+                    currentMatchIndex = -1;
+                }
+                
+                // Position cursor after replacement
+                const newCursorPos = match.start + replacementText.length;
+                jsonEditor.setSelectionRange(newCursorPos, newCursorPos);
+                
+                // Update UI
+                updateSearchCount();
+                updateSearchButtons();
+                
+                // Highlight next match if available
+                if (currentSearchMatches.length > 0 && currentMatchIndex >= 0) {
+                    highlightMatch();
+                }
+            }
+        }
+
+        function replaceAllMatches() {
+            if (currentSearchMatches.length > 0) {
+                const searchTerm = searchInput.value.trim();
+                const replacementText = replaceInput.value;
+                const count = currentSearchMatches.length;
+                
+                if (searchTerm) {
+                    const regex = new RegExp(escapeRegExp(searchTerm), 'g');
+                    jsonEditor.value = jsonEditor.value.replace(regex, replacementText);
+                    
+                    // Clear matches and reset
+                    currentSearchMatches = [];
+                    currentMatchIndex = -1;
+                    
+                    // Show notification about replacements
+                    showNotification(`Replaced ${count} occurrence${count === 1 ? '' : 's'}`, 'success');
+                    
+                    // Update UI
+                    updateSearchCount();
+                    updateSearchButtons();
+                    
+                    // Position cursor at start
+                    jsonEditor.setSelectionRange(0, 0);
+                    jsonEditor.scrollTop = 0;
+                }
+            }
+        }
+
+        // Event listeners for search functionality
+        searchInput.addEventListener('input', () => {
+            performSearch(false); // Do not highlight/select in editor while typing
+        });
+        
+        searchInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    findPrev();
+                } else {
+                    findNext();
+                }
+                highlightMatch(); // Only highlight/select in editor on navigation
             }
         });
 
-        async function uploadFile(file) {
-            hideJsonData();
-            showStatus('Processing', 'Uploading and parsing your file...', 'processing', '⏳');
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            try {
-                const response = await fetch('/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showStatus('Complete', 'File processed successfully!', 'success', '✅');
-                    showJsonData(result.parsed_data);
-                } else {
-                    throw new Error(result.error || 'Upload failed');
-                }
-            } catch (error) {
-                console.error('Upload error:', error);
-                showStatus('Error', error.message, 'error', '❌');
+        replaceInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                replaceCurrentMatch();
             }
-        }
+        });
+
+        prevMatchBtn.addEventListener('click', findPrev);
+        nextMatchBtn.addEventListener('click', findNext);
+        replaceBtn.addEventListener('click', replaceCurrentMatch);
+        replaceAllBtn.addEventListener('click', replaceAllMatches);
+
+        // Main event listeners
+        removeFileBtn.addEventListener('click', removeFile);
+        processBtn.addEventListener('click', () => {
+            if (currentFile) {
+                uploadFile(currentFile);
+            }
+        });
+        editJsonBtn.addEventListener('click', enterEditMode);
+        saveJsonBtn.addEventListener('click', saveJsonChanges);
+        cancelEditBtn.addEventListener('click', cancelEdit);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Only handle shortcuts when editing
+            if (isEditing && jsonEditor === document.activeElement) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.key === 'g') {
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        findPrev();
+                    } else {
+                        findNext();
+                    }
+                    highlightMatch();
+                }
+                
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    saveJsonChanges();
+                }
+                
+                if (e.key === 'Escape') {
+                    if (jsonSearchControls.classList.contains('hidden')) {
+                        cancelEdit();
+                    } else {
+                        searchInput.blur();
+                        replaceInput.blur();
+                        jsonEditor.focus();
+                    }
+                }
+            }
+        });
 
         // Download functionality
         downloadJsonBtn.addEventListener('click', () => {
@@ -890,7 +1521,39 @@
                 }
             });
             
-            return textContent;
+            return textContent || 'No text content found in the parsed data.';
+        }
+
+        async function uploadFile(file) {
+            hideProcessSection();
+            hideJsonData();
+            showStatus('Processing', `Analyzing your PDF with ${selectedProcessingType} parsing...`, 'processing', '⚡');
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('processing_type', selectedProcessingType);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showStatus('Complete', 'File processed successfully!', 'success', '✅');
+                    showJsonData(result.parsed_data);
+                    showNotification('PDF processed successfully!', 'success');
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showStatus('Error', error.message, 'error', '❌');
+                showProcessSection();
+                showNotification(`Processing failed: ${error.message}`, 'error');
+            }
         }
     </script>
 </body>

@@ -6,6 +6,9 @@ import requests
 import json
 from werkzeug.utils import secure_filename
 import tempfile
+from dotenv import load_dotenv
+
+load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 CORS(app)
@@ -22,7 +25,7 @@ app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ChatDoc API Configuration
-API_KEY = os.getenv("chatdoc_api_key", "your_api_key_here")
+API_KEY = os.getenv("chatdoc_api_key")
 if not API_KEY:
     raise ValueError("API key for ChatDoc is not set. Please set the 'chatdoc_api_key' environment variable.")
 
