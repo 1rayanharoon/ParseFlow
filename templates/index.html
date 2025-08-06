@@ -798,32 +798,20 @@
 
                 <div id="processSection" class="process-section hidden">
                     <div class="process-options">
-                        <div class="option-card" data-type="basic">
-                            <div class="option-icon">📝</div>
-                            <div class="option-content">
-                                <div class="option-title">Basic Text Extraction</div>
-                                <div class="option-description">Clean text content, paragraphs, and basic formatting</div>
-                                <div class="option-features">
-                                    <span class="feature-tag">✓ Text content</span>
-                                    <span class="feature-tag">✓ Paragraphs</span>
-                                    <span class="feature-tag">✓ Basic structure</span>
-                                </div>
-                                <div class="option-time">⚡ ~10-15 seconds</div>
-                            </div>
-                        </div>
                         <div class="option-card" data-type="advanced">
                             <div class="option-icon">🧠</div>
-                            <div class="option-content">
-                                <div class="option-title">Advanced Analysis</div>
-                                <div class="option-description">Complete document analysis with tables, metadata, and layout</div>
-                                <div class="option-features">
-                                    <span class="feature-tag">✓ Everything in Basic</span>
-                                    <span class="feature-tag">✓ Tables & Charts</span>
-                                    <span class="feature-tag">✓ Document metadata</span>
-                                    <span class="feature-tag">✓ Layout analysis</span>
-                                </div>
-                                <div class="option-time">⏱️ ~20-45 seconds</div>
-                            </div>
+                            <!-- Example C: Enhanced PDF Parsing -->
+<div class="option-title">Enhanced PDF Parsing</div>
+<div class="option-description">
+  Unlock advanced insights: capture tables, metadata fields, and page layout patterns.
+</div>
+<div class="option-features">
+  <span class="feature-tag">✓ Tables & Figures</span>
+  <span class="feature-tag">✓ Document Metadata</span>
+  <span class="feature-tag">✓ Layout & Hierarchy</span>
+</div>
+<div class="option-time">⏱️ ~30–60 seconds</div>
+
                         </div>
                     </div>
                     <div class="process-actions">
@@ -1593,7 +1581,7 @@
         }
 
         // --- MOCK MODE FLAG ---
-        const USE_MOCK = true; // Set to false for production
+        const USE_MOCK = false; // Set to false for production
         // --- END MOCK MODE FLAG ---
 
         async function uploadFile(file) {
