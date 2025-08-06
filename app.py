@@ -127,44 +127,62 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
+    """
+    Accepts a PDF file and returns either
+      - basic:  {data:{elements:[{page:int, text:str}, …]}}
+      - advanced: untouched / full ChatDoc payload
+    """
     try:
+        # ── 1. Basic file presence & type checks
         if 'file' not in request.files:
             return jsonify({'error': 'No file selected'}), 400
-        
+
         file = request.files['file']
         if file.filename == '':
             return jsonify({'error': 'No file selected'}), 400
-        
+
         if not allowed_file(file.filename):
             return jsonify({'error': 'Only PDF files are allowed'}), 400
-        
-        # Save uploaded file temporarily
+
+        # ── 2. Decide which mode the user chose
+        processing_type = request.form.get('processing_type', 'advanced')
+
+        # ── 3. Save the file temporarily
         filename = secure_filename(file.filename)
         temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(temp_path)
-        
+
         try:
-            # Process the document
+            # ── 4. Upload to ChatDoc and wait for parsing
             document_id = upload_document_to_chatdoc(temp_path)
-            parsed_data = wait_for_parsing(document_id)
+            parsed_metadata = wait_for_parsing(document_id)
             parsed_content = get_parsed_content(document_id)
-            
-            # Clean up temporary file
+
+            # ── 5. Apply basic-mode filter if requested
+            if processing_type == 'basic':
+                elements = parsed_content.get('data', {}).get('elements', [])
+                basic_elements = [
+                    {'page': el.get('page'), 'text': el.get('text')}
+                    for el in elements
+                    if el.get('text') is not None
+                ]
+                parsed_content = {'data': {'elements': basic_elements}}
+
+            # ── 6. Clean up & return
             os.remove(temp_path)
-            
             return jsonify({
                 'success': True,
                 'filename': filename,
                 'document_id': document_id,
                 'parsed_data': parsed_content
             })
-            
+
         except Exception as e:
-            # Clean up temporary file in case of error
+            # Ensure temp file is removed on any error
             if os.path.exists(temp_path):
                 os.remove(temp_path)
             raise e
-            
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

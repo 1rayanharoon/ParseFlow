@@ -539,6 +539,12 @@
             white-space: nowrap;
         }
 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
         .btn-primary {
             background: var(--primary);
             color: white;
@@ -752,15 +758,27 @@
             animation: slideDown 0.3s ease-out;
         }
 
-        /* Search highlight styles */
-        .search-highlight {
-            background-color: #fef08a !important;
-            color: #365314 !important;
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            max-width: 300px;
         }
 
-        .search-highlight.current {
-            background-color: #f59e0b !important;
-            color: white !important;
+        .notification.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .notification.error {
+            background: var(--error);
+            color: white;
         }
     </style>
 </head>
@@ -796,22 +814,34 @@
                     </div>
                 </div>
 
-                <div id="processSection" class="process-section hidden">
+                 <div id="processSection" class="process-section hidden">
                     <div class="process-options">
+                        <div class="option-card" data-type="basic">
+                            <div class="option-icon">📝</div>
+                            <div class="option-content">
+                                <div class="option-title">Basic Text Extraction</div>
+                                <div class="option-description">Clean text content, paragraphs, and basic formatting</div>
+                                <div class="option-features">
+                                    <span class="feature-tag">✓ Text content</span>
+                                    <span class="feature-tag">✓ Paragraphs</span>
+                                    <span class="feature-tag">✓ Basic structure</span>
+                                </div>
+                                <div class="option-time">⚡ ~10-15 seconds</div>
+                            </div>
+                        </div>
                         <div class="option-card" data-type="advanced">
                             <div class="option-icon">🧠</div>
-                            <!-- Example C: Enhanced PDF Parsing -->
-<div class="option-title">Enhanced PDF Parsing</div>
-<div class="option-description">
-  Unlock advanced insights: capture tables, metadata fields, and page layout patterns.
-</div>
-<div class="option-features">
-  <span class="feature-tag">✓ Tables & Figures</span>
-  <span class="feature-tag">✓ Document Metadata</span>
-  <span class="feature-tag">✓ Layout & Hierarchy</span>
-</div>
-<div class="option-time">⏱️ ~30–60 seconds</div>
-
+                            <div class="option-content">
+                                <div class="option-title">Advanced Analysis</div>
+                                <div class="option-description">Complete document analysis with tables, metadata, and layout</div>
+                                <div class="option-features">
+                                    <span class="feature-tag">✓ Everything in Basic</span>
+                                    <span class="feature-tag">✓ Tables & Charts</span>
+                                    <span class="feature-tag">✓ Document metadata</span>
+                                    <span class="feature-tag">✓ Layout analysis</span>
+                                </div>
+                                <div class="option-time">⏱️ ~20-45 seconds</div>
+                            </div>
                         </div>
                     </div>
                     <div class="process-actions">
@@ -819,6 +849,7 @@
                             <span>⚡</span>
                             Process PDF
                         </button>
+                        
                         <div class="process-info">
                             <span>⏱️ Estimated time: 10-30 seconds</span>
                         </div>
@@ -863,8 +894,8 @@
                                 <input type="text" id="replaceInput" class="search-input" placeholder="Replace with...">
                             </div>
                             <div class="search-replace-buttons">
-                                <button class="btn btn-secondary" id="prevMatchBtn" title="Previous (Ctrl+Shift+G)">↑</button>
-                                <button class="btn btn-secondary" id="nextMatchBtn" title="Next (Ctrl+G)">↓</button>
+                                <button class="btn btn-secondary" id="prevMatchBtn" title="Previous (Shift+Enter)">↑</button>
+                                <button class="btn btn-secondary" id="nextMatchBtn" title="Next (Enter)">↓</button>
                                 <button class="btn btn-primary" id="replaceBtn">Replace</button>
                                 <button class="btn btn-primary" id="replaceAllBtn">Replace All</button>
                             </div>
@@ -939,12 +970,20 @@
         const jsonSearchControls = document.getElementById('jsonSearchControls');
         const searchCount = document.getElementById('searchCount');
 
-        // Utility function to escape regex special characters
-
-        function escapeRegExp(string) {
+          function escapeRegExp(string) {
             return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
         // Show notification
+        function showNotification(message, type = 'info') { 
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
         function showNotification(message, type = 'info') { 
             const notification = document.createElement('div');
             notification.className = `notification ${type}`;
@@ -1013,8 +1052,6 @@
         function showProcessSection() {
             processSection.classList.remove('hidden');
             processSection.classList.add('fade-in');
-            
-            // Setup option cards click handlers
             setupProcessingOptions();
         }
 
@@ -1025,7 +1062,6 @@
         function setupProcessingOptions() {
             const optionCards = document.querySelectorAll('.option-card');
             
-            // Set first option as selected by default
             if (optionCards.length > 0) {
                 optionCards[0].classList.add('selected');
                 selectedProcessingType = optionCards[0].dataset.type || 'basic';
@@ -1033,19 +1069,13 @@
             
             optionCards.forEach((card) => {
                 card.addEventListener('click', () => {
-                    // Remove selection from all cards
                     optionCards.forEach(c => c.classList.remove('selected'));
-                    // Add selection to clicked card
                     card.classList.add('selected');
-                    
                     selectedProcessingType = card.dataset.type || 'basic';
-                    
-                    // Update button text based on selection
                     updateProcessButtonText();
                 });
             });
             
-            // Set initial button text
             updateProcessButtonText();
         }
 
@@ -1115,8 +1145,9 @@
             showSearchControls();
             hideValidationMessage();
             jsonEditor.focus();
-            performSearch();
-            updateSearchButtons();
+            
+            // Reset search state when entering edit mode
+            clearSearch();
         }
 
         function exitEditMode() {
@@ -1168,29 +1199,6 @@
             validationMessage.classList.add('hidden');
         }
 
-        function showNotification(message, type = 'error') {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 2rem;
-                right: 2rem;
-                background: ${type === 'error' ? 'var(--error)' : 'var(--success)'};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: var(--radius-md);
-                font-weight: 500;
-                z-index: 1000;
-                animation: fadeIn 0.3s ease;
-                box-shadow: var(--shadow-lg);
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 4000);
-        }
-
         // Search and Replace Functionality
         function showSearchControls() {
             jsonSearchControls.classList.remove('hidden');
@@ -1207,7 +1215,7 @@
             currentSearchMatches = [];
             currentMatchIndex = -1;
             updateSearchCount();
-            removeHighlights();
+            updateSearchButtons();
         }
 
         function updateSearchCount() {
@@ -1220,20 +1228,11 @@
             }
         }
 
-        function removeHighlights() {
-            // Clear any existing selection in the editor
-            if (jsonEditor.selectionStart !== jsonEditor.selectionEnd) {
-                jsonEditor.setSelectionRange(jsonEditor.selectionStart, jsonEditor.selectionStart);
-            }
-        }
-
-        // Modified performSearch to accept shouldHighlight param
-        function performSearch(shouldHighlight = false) {
+        function performSearch() {
             const searchTerm = searchInput.value.trim();
             const text = jsonEditor.value;
             currentSearchMatches = [];
-            // Store current cursor position to find nearest match
-            const currentPos = jsonEditor.selectionStart;
+            
             if (searchTerm) {
                 let match;
                 const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
@@ -1243,90 +1242,77 @@
                         end: match.index + match[0].length,
                         text: match[0]
                     });
-                    // Prevent infinite loop on zero-length matches
+                    
                     if (match.index === regex.lastIndex) {
                         regex.lastIndex++;
                     }
                 }
-            }
-            if (currentSearchMatches.length > 0) {
+                
+                // Find the first match at or after current cursor position
+                const currentPos = jsonEditor.selectionStart;
                 let foundIndex = currentSearchMatches.findIndex(match => match.start >= currentPos);
-                if (foundIndex === -1) {
+                if (foundIndex === -1 && currentSearchMatches.length > 0) {
                     foundIndex = 0;
                 }
-                currentMatchIndex = foundIndex;
+                currentMatchIndex = foundIndex !== -1 ? foundIndex : -1;
             } else {
                 currentMatchIndex = -1;
             }
+            
             updateSearchCount();
             updateSearchButtons();
-            // Only highlight/select in editor if requested (e.g., on navigation)
-            if (shouldHighlight && currentSearchMatches.length > 0) {
-                highlightMatch();
-            }
         }
 
         function updateSearchButtons() {
-            const disabled = currentSearchMatches.length === 0;
-            prevMatchBtn.disabled = disabled;
-            nextMatchBtn.disabled = disabled;
-            replaceBtn.disabled = disabled;
-            replaceAllBtn.disabled = disabled;
-
-            // Update button opacity based on disabled state
-            prevMatchBtn.style.opacity = disabled ? '0.5' : '1';
-            nextMatchBtn.style.opacity = disabled ? '0.5' : '1';
-            replaceBtn.style.opacity = disabled ? '0.5' : '1';
-            replaceAllBtn.style.opacity = disabled ? '0.5' : '1';
+            const hasMatches = currentSearchMatches.length > 0;
+            prevMatchBtn.disabled = !hasMatches;
+            nextMatchBtn.disabled = !hasMatches;
+            replaceBtn.disabled = !hasMatches || currentMatchIndex === -1;
+            replaceAllBtn.disabled = !hasMatches;
         }
 
         function highlightMatch() {
             if (currentMatchIndex >= 0 && currentMatchIndex < currentSearchMatches.length) {
                 const match = currentSearchMatches[currentMatchIndex];
-                
-                // Focus and select the match
                 jsonEditor.focus();
                 jsonEditor.setSelectionRange(match.start, match.end);
-                
-                // Scroll to the match with improved positioning
                 scrollToMatch(match);
             }
         }
-
-        // FIXED: Improved scrollToMatch function
+        // function scrollToMatch(match) {
+        //     const textBeforeMatch = jsonEditor.value.substring(0, match.start);
+        //     const lines = textBeforeMatch.split('\n');
+        //     const lineNumber = lines.length - 1;
+            
+        //     const computedStyle = window.getComputedStyle(jsonEditor);
+        //     const lineHeight = parseFloat(computedStyle.lineHeight) || 20;
+        //     const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
+            
+        //     const linePixelPosition = lineNumber * lineHeight;
+        //     const viewportHeight = jsonEditor.clientHeight;
+        //     const scrollPosition = linePixelPosition - (viewportHeight / 2) + paddingTop;
+            
+        //     const maxScroll = jsonEditor.scrollHeight - jsonEditor.clientHeight;
+        //     const finalScrollPosition = Math.max(0, Math.min(maxScroll, scrollPosition));
+            
+        //     jsonEditor.scrollTop = finalScrollPosition;
+        // }
         function scrollToMatch(match) {
-            // Get the text before the match to calculate line position
-            const textBeforeMatch = jsonEditor.value.substring(0, match.start);
-            const lines = textBeforeMatch.split('\n');
-            const lineNumber = lines.length - 1;
-            
-            // Get computed styles for proper calculations
-            const computedStyle = window.getComputedStyle(jsonEditor);
-            const lineHeight = parseFloat(computedStyle.lineHeight);
-            const paddingTop = parseFloat(computedStyle.paddingTop);
-            
-            // Calculate the pixel position of the line
-            const linePixelPosition = lineNumber * lineHeight;
-            
-            // Calculate desired scroll position (center the match in viewport)
-            const viewportHeight = jsonEditor.clientHeight;
-            const scrollPosition = linePixelPosition - (viewportHeight / 2) + paddingTop;
-            
-            // Ensure scroll position is within valid bounds
-            const maxScroll = jsonEditor.scrollHeight - jsonEditor.clientHeight;
-            const finalScrollPosition = Math.max(0, Math.min(maxScroll, scrollPosition));
-            
-            // Smooth scroll to position
-            jsonEditor.scrollTo({
-                top: finalScrollPosition,
-                behavior: 'smooth'
-            });
-            
-            // Alternative fallback for browsers that don't support smooth scrolling
-            if (jsonEditor.scrollTop === finalScrollPosition) {
-                jsonEditor.scrollTop = finalScrollPosition;
-            }
-        }
+  // 1️⃣ Place cursor exactly on the match
+  jsonEditor.focus();
+  jsonEditor.setSelectionRange(match.start, match.end);
+
+  // 2️⃣ Measure one rendered line height
+  const lineHeight = jsonEditor.scrollHeight /
+                     (jsonEditor.value.split('\n').length || 1);
+
+  // 3️⃣ Compute how many full lines are above the match
+  const linesAbove = jsonEditor.value.substring(0, match.start).split('\n').length - 1;
+
+  // 4️⃣ Scroll so the matched line is **centered**
+  const targetScroll = linesAbove * lineHeight - (jsonEditor.clientHeight / 2);
+  jsonEditor.scrollTop = Math.max(0, targetScroll);
+}
 
         function findNext() {
             if (currentSearchMatches.length > 0) {
@@ -1350,14 +1336,12 @@
                 const replacementText = replaceInput.value;
                 const text = jsonEditor.value;
                 
-                // Replace the text
                 const newText = text.substring(0, match.start) + replacementText + text.substring(match.end);
                 jsonEditor.value = newText;
                 
-                // Calculate the difference in length
                 const lengthDiff = replacementText.length - (match.end - match.start);
                 
-                // Update all subsequent match positions
+                // Update subsequent match positions
                 for (let i = currentMatchIndex + 1; i < currentSearchMatches.length; i++) {
                     currentSearchMatches[i].start += lengthDiff;
                     currentSearchMatches[i].end += lengthDiff;
@@ -1377,11 +1361,9 @@
                 const newCursorPos = match.start + replacementText.length;
                 jsonEditor.setSelectionRange(newCursorPos, newCursorPos);
                 
-                // Update UI
                 updateSearchCount();
                 updateSearchButtons();
                 
-                // Highlight next match if available
                 if (currentSearchMatches.length > 0 && currentMatchIndex >= 0) {
                     highlightMatch();
                 }
@@ -1389,37 +1371,30 @@
         }
 
         function replaceAllMatches() {
-            if (currentSearchMatches.length > 0) {
-                const searchTerm = searchInput.value.trim();
-                const replacementText = replaceInput.value;
-                const count = currentSearchMatches.length;
-                
-                if (searchTerm) {
-                    const regex = new RegExp(escapeRegExp(searchTerm), 'g');
-                    jsonEditor.value = jsonEditor.value.replace(regex, replacementText);
-                    
-                    // Clear matches and reset
-                    currentSearchMatches = [];
-                    currentMatchIndex = -1;
-                    
-                    // Show notification about replacements
-                    showNotification(`Replaced ${count} occurrence${count === 1 ? '' : 's'}`, 'success');
-                    
-                    // Update UI
-                    updateSearchCount();
-                    updateSearchButtons();
-                    
-                    // Position cursor at start
-                    jsonEditor.setSelectionRange(0, 0);
-                    jsonEditor.scrollTop = 0;
-                }
-            }
-        }
+    const searchTerm = searchInput.value.trim();
+    const replacementText = replaceInput.value;
+
+    if (!searchTerm) return;
+
+    // Use .replace once – no manual loop
+    const newText = jsonEditor.value.replace(
+        new RegExp(escapeRegExp(searchTerm), 'g'),
+        replacementText
+    );
+
+    // Count how many replacements happened
+    const replacedCount = (jsonEditor.value.match(new RegExp(escapeRegExp(searchTerm), 'g')) || []).length;
+
+    jsonEditor.value = newText;
+
+    // Re-scan matches
+    performSearch(false);
+
+    showNotification(`Replaced ${replacedCount} occurrence${replacedCount === 1 ? '' : 's'}`, 'success');
+}
 
         // Event listeners for search functionality
-        searchInput.addEventListener('input', () => {
-            performSearch(false); // Do not highlight/select in editor while typing
-        });
+        searchInput.addEventListener('input', performSearch);
         
         searchInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -1457,8 +1432,7 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
-            // Only handle shortcuts when editing
-            if (isEditing && jsonEditor === document.activeElement) {
+            if (isEditing) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
                     e.preventDefault();
                     searchInput.focus();
@@ -1480,12 +1454,12 @@
                 }
                 
                 if (e.key === 'Escape') {
-                    if (jsonSearchControls.classList.contains('hidden')) {
-                        cancelEdit();
-                    } else {
+                    if (!jsonSearchControls.classList.contains('hidden')) {
                         searchInput.blur();
                         replaceInput.blur();
                         jsonEditor.focus();
+                    } else {
+                        cancelEdit();
                     }
                 }
             }
@@ -1547,7 +1521,6 @@
                 await navigator.clipboard.writeText(text);
                 showNotification(successMessage, 'success');
             } catch (err) {
-                // Fallback for browsers that don't support clipboard API
                 try {
                     const textArea = document.createElement('textarea');
                     textArea.value = text;
@@ -1580,9 +1553,8 @@
             return textContent || 'No text content found in the parsed data.';
         }
 
-        // --- MOCK MODE FLAG ---
+        // Mock mode for testing
         const USE_MOCK = false; // Set to false for production
-        // --- END MOCK MODE FLAG ---
 
         async function uploadFile(file) {
             if (USE_MOCK) {
@@ -1590,34 +1562,33 @@
                 hideJsonData();
                 showStatus('Processing', `Simulating PDF parsing with ${selectedProcessingType}...`, 'processing', '⚡');
                 setTimeout(() => {
-                    // Large mock data: 100 elements
                     const mockElements = [];
-                    for (let i = 1; i <= 100; i++) {
+                    for (let i = 1; i <= 50; i++) {
                         mockElements.push({
-                            text: `Mock line ${i}: This is a sample line of text for testing large JSON mock data.`,
+                            text: `Mock line ${i}: This is a sample line of text for testing the search and replace functionality. Line number ${i} contains searchable content.`,
                             type: i % 3 === 0 ? 'table' : (i % 2 === 0 ? 'paragraph' : 'title'),
                             id: i,
                             page: Math.floor((i-1)/10)+1
                         });
                     }
-                    const mockData = selectedProcessingType === 'advanced'
-                        ? {
-                            data: {
-                                elements: mockElements,
-                                metadata: { author: 'Mock Author', pages: 10, created: '2025-08-06', title: 'Large Mock PDF' }
+                    const mockData = {
+                        data: {
+                            elements: mockElements,
+                            metadata: { 
+                                author: 'Mock Author', 
+                                pages: 5, 
+                                created: '2025-08-06', 
+                                title: 'Test PDF for Search Functionality' 
                             }
                         }
-                        : {
-                            data: {
-                                elements: mockElements.slice(0, 100)
-                            }
-                        };
+                    };
                     showStatus('Complete', 'File processed (mock) successfully!', 'success', '✅');
                     showJsonData(mockData);
                     showNotification('PDF processed (mock) successfully!', 'success');
                 }, 1000);
                 return;
             }
+
             hideProcessSection();
             hideJsonData();
             showStatus('Processing', `Analyzing your PDF with ${selectedProcessingType} parsing...`, 'processing', '⚡');
