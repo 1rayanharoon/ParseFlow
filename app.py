@@ -8,21 +8,19 @@ from werkzeug.utils import secure_filename
 import tempfile
 from dotenv import load_dotenv
 
+
 load_dotenv()  # Load environment variables from .env file
 
 app = Flask(__name__)
 CORS(app)
 
 # Configuration
-UPLOAD_FOLDER = 'temp_uploads'
+
 ALLOWED_EXTENSIONS = {'pdf'}
 MAX_CONTENT_LENGTH = 50 * 1024 * 1024  # 16MB max file size
 
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
-# Create upload directory if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # ChatDoc API Configuration
 API_KEY = os.getenv("chatdoc_api_key")
@@ -125,6 +123,7 @@ def get_parsed_content(document_id):
 def index():
     return render_template('index.html')
 
+
 @app.route('/upload', methods=['POST'])
 def upload_file():
     """
@@ -147,43 +146,38 @@ def upload_file():
         # ── 2. Decide which mode the user chose
         processing_type = request.form.get('processing_type', 'advanced')
 
-        # ── 3. Save the file temporarily
+        # ── 3. Create a real temp-file (in /tmp) and save into it
         filename = secure_filename(file.filename)
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(temp_path)
+        suffix = os.path.splitext(filename)[1] or '.pdf'
+        with tempfile.NamedTemporaryFile(prefix='chatdoc_', suffix=suffix) as tmp:
+            file.save(tmp.name)
+            tmp.flush()
 
-        try:
             # ── 4. Upload to ChatDoc and wait for parsing
-            document_id = upload_document_to_chatdoc(temp_path)
+            document_id = upload_document_to_chatdoc(tmp.name)
             parsed_metadata = wait_for_parsing(document_id)
             parsed_content = get_parsed_content(document_id)
 
-            # ── 5. Apply basic-mode filter if requested
-            if processing_type == 'basic':
-                elements = parsed_content.get('data', {}).get('elements', [])
-                basic_elements = [
-                    {'page': el.get('page'), 'text': el.get('text')}
-                    for el in elements
-                    if el.get('text') is not None
-                ]
-                parsed_content = {'data': {'elements': basic_elements}}
+        # ── 5. Apply basic-mode filter if requested
+        if processing_type == 'basic':
+            elements = parsed_content.get('data', {}).get('elements', [])
+            basic_elements = [
+                {'page': el.get('page'), 'text': el.get('text')}
+                for el in elements
+                if el.get('text') is not None
+            ]
+            parsed_content = {'data': {'elements': basic_elements}}
 
-            # ── 6. Clean up & return
-            os.remove(temp_path)
-            return jsonify({
-                'success': True,
-                'filename': filename,
-                'document_id': document_id,
-                'parsed_data': parsed_content
-            })
-
-        except Exception as e:
-            # Ensure temp file is removed on any error
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-            raise e
+        # ── 6. Return
+        return jsonify({
+            'success': True,
+            'filename': filename,
+            'document_id': document_id,
+            'parsed_data': parsed_content
+        })
 
     except Exception as e:
+        # You can log e here if you want
         return jsonify({'error': str(e)}), 500
 
 @app.route('/status/<document_id>')

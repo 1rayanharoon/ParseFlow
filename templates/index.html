@@ -1297,21 +1297,35 @@
             
         //     jsonEditor.scrollTop = finalScrollPosition;
         // }
-        function scrollToMatch(match) {
-  // 1️⃣ Place cursor exactly on the match
+        /**
+ * Scroll the current match into the visible area of the textarea
+ * Works even with soft-wrapped lines or very long text.
+ */function scrollToMatch(match) {
+  /* 1. Focus + select */
   jsonEditor.focus();
   jsonEditor.setSelectionRange(match.start, match.end);
 
-  // 2️⃣ Measure one rendered line height
-  const lineHeight = jsonEditor.scrollHeight /
-                     (jsonEditor.value.split('\n').length || 1);
+  /* 2. Force reflow once */
+  void jsonEditor.offsetHeight;
 
-  // 3️⃣ Compute how many full lines are above the match
-  const linesAbove = jsonEditor.value.substring(0, match.start).split('\n').length - 1;
+  /* 3. Single hidden clone for exact scroll height */
+  const clone = document.createElement('textarea');
+  clone.style.cssText = `
+    position:absolute; left:-9999px; top:0;
+    font: ${getComputedStyle(jsonEditor).font};
+    width: ${jsonEditor.clientWidth}px;
+    height:auto; overflow:hidden; white-space:pre-wrap;
+  `;
+  clone.value = jsonEditor.value.substring(0, match.start);
+  document.body.appendChild(clone);
 
-  // 4️⃣ Scroll so the matched line is **centered**
-  const targetScroll = linesAbove * lineHeight - (jsonEditor.clientHeight / 2);
-  jsonEditor.scrollTop = Math.max(0, targetScroll);
+  const caretTop = clone.scrollHeight;
+  const lineHeight = clone.scrollHeight / (clone.value.split('\n').length || 1);
+  document.body.removeChild(clone);
+
+  /* 4. Snap caret to the *nearest* edge instead of center */
+  const scrollTarget = caretTop - lineHeight / 2; // top of the line
+  jsonEditor.scrollTop = Math.max(0, scrollTarget);
 }
 
         function findNext() {
@@ -1565,7 +1579,7 @@
                     const mockElements = [];
                     for (let i = 1; i <= 50; i++) {
                         mockElements.push({
-                            text: `Mock line ${i}: This is a sample line of text for testing the search and replace functionality. Line number ${i} contains searchable content.`,
+                            text: `K.Ban is known to me as a patient since 2014. He has had multiple problems over the last seven years including Hypertension ,Anxiety,IBS, Hiatal Hernia and Migraines. He is on multiple medications including multiple psychiatric medications and two medications for his blood pressure. He has multiple Psychiatric diagnosis mainly PTSD,Depression and Anxiety Disorder.`,
                             type: i % 3 === 0 ? 'table' : (i % 2 === 0 ? 'paragraph' : 'title'),
                             id: i,
                             page: Math.floor((i-1)/10)+1
