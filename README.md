@@ -1,4 +1,4 @@
-# 📄 PDF Parser – Modern Web UI  
+  # 📄 PDF Parser – Modern Web UI  
 A lightweight, **drag-and-drop** PDF-to-JSON parser with an elegant, responsive interface and a full **find & replace** JSON editor.
 
 ---
@@ -28,7 +28,7 @@ A lightweight, **drag-and-drop** PDF-to-JSON parser with an elegant, responsive 
 
 ### 1. Clone & install
 ```bash
-git clone https://github.com/your-username/pdf-parser-ui.git
+git clone (https://github.com/1rayanharoon/ParseFlow.git)
 cd pdf-parser-ui
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
